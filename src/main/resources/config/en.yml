@@ -292,11 +292,8 @@ DiscordCannedResponses: {"!ip": "yourserveripchange.me", "!site": "http://yoursi
 # %discordname%:         linked discord account's username
 #                         example: Notch
 #
-# MinecraftDiscordAccountLinkedRoleNameToAddUserTo: the name or id of a discord role to add a discord user to when they link their account
-# MinecraftDiscordAccountLinkedAllowRelinkBySendingANewCode: allows sending a new code to the bot to unlink and relink with the new code
-# MinecraftDiscordAccountLinkedUsePM: link accounts using PMs
-# MinecraftDiscordAccountLinkedMessageDeleteSeconds: Time (in seconds) before deleting the message when linked in a text channel. Set to 0 if you do not want to delete the message.
-#
+# MinecraftDiscordAccountLinkChannelId: the Discord channel ID where users should send their link code (instead of DM/PM). Leave blank to use the default 'link' channel from Channels section.
+MinecraftDiscordAccountLinkChannelId: ""
 MinecraftDiscordAccountLinkedConsoleCommands: ["", "", ""]
 MinecraftDiscordAccountUnlinkedConsoleCommands: ["", "", ""]
 MinecraftDiscordAccountLinkedRoleNameToAddUserTo: "Linked"

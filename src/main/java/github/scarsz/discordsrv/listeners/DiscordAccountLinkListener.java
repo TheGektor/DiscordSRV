@@ -36,11 +36,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 public class DiscordAccountLinkListener extends ListenerAdapter {
 
@@ -48,6 +48,10 @@ public class DiscordAccountLinkListener extends ListenerAdapter {
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
         // don't process messages sent by the bot
         if (event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) return;
+
+        // если явно указан канал для линка — не обрабатывать привязку через ЛС
+        String linkChannelId = DiscordSRV.config().getString("MinecraftDiscordAccountLinkChannelId");
+        if (linkChannelId != null && !linkChannelId.isEmpty()) return;
 
         DiscordSRV.api.callEvent(new DiscordPrivateMessageReceivedEvent(event));
 
@@ -67,15 +71,22 @@ public class DiscordAccountLinkListener extends ListenerAdapter {
         // don't process messages sent by bots
         if (event.getAuthor().isBot()) return;
 
-        // if message is not in the link channel, don't process it
-        TextChannel linkChannel = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("link");
+        // get link channel from config or fallback to 'link' channel
+        String linkChannelId = DiscordSRV.config().getString("MinecraftDiscordAccountLinkChannelId");
+        TextChannel linkChannel = null;
+        if (linkChannelId != null && !linkChannelId.isEmpty()) {
+            linkChannel = event.getJDA().getTextChannelById(linkChannelId);
+        }
+        if (linkChannel == null) {
+            linkChannel = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("link");
+        }
         if (!event.getChannel().equals(linkChannel)) return;
 
         Message receivedMessage = event.getMessage();
         String reply = DiscordSRV.getPlugin().getAccountLinkManager().process(receivedMessage.getContentRaw(), event.getAuthor().getId());
         if (reply != null) {
             int deleteSeconds = DiscordSRV.config().getIntElse("MinecraftDiscordAccountLinkedMessageDeleteSeconds", 0);
-            RestAction<Message> repliedMessage = receivedMessage.reply(reply).delay(deleteSeconds, TimeUnit.SECONDS);
+            RestAction<Message> repliedMessage = receivedMessage.reply(reply).delay(deleteSeconds, java.util.concurrent.TimeUnit.SECONDS);
 
             repliedMessage.queue(replyMessage -> {
                 // delete the message after a delay if the config option is set
@@ -85,7 +96,6 @@ public class DiscordAccountLinkListener extends ListenerAdapter {
                             e -> DiscordSRV.debug(Debug.ACCOUNT_LINKING, "Failed to delete " + receivedMessage.getAuthor() + "'s message in the link channel because of missing permissions.")));
                 }
             });
-
         }
     }
 
