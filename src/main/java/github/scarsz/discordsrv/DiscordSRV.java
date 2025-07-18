@@ -402,6 +402,9 @@ public class DiscordSRV extends JavaPlugin {
 
         // load config
         getDataFolder().mkdirs();
+        // --- Автосоздание welcom-message.yml ---
+        // Удалить блок автосоздания welcom-message.yml
+        // --- конец автосоздания welcom-message.yml ---
         config = new DynamicConfig();
         config.addSource(DiscordSRV.class, "config", getConfigFile());
         config.addSource(DiscordSRV.class, "messages", getMessagesFile());

@@ -24,6 +24,11 @@ import github.scarsz.discordsrv.Debug;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.events.DiscordPrivateMessageReceivedEvent;
 import github.scarsz.discordsrv.util.DiscordUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
+import java.awt.Color;
+import java.io.InputStream;
+import org.yaml.snakeyaml.Yaml;
+import java.util.Map;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -39,8 +44,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 public class DiscordAccountLinkListener extends ListenerAdapter {
 
@@ -114,8 +117,7 @@ public class DiscordAccountLinkListener extends ListenerAdapter {
             }
 
             if (DiscordSRV.config().getBoolean("NicknameSynchronizationEnabled")) {
-                OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-                DiscordSRV.getPlugin().getNicknameUpdater().setNickname(member, player);
+                DiscordSRV.getPlugin().getNicknameUpdater().setNickname(member, null);
             }
         }
     }
